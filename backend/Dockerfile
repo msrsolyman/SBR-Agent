@@ -10,8 +10,8 @@ COPY package*.json ./
 # Install production dependencies
 RUN npm ci --only=production
 
-# Copy source code files
-COPY . .
+# Copy source code files explicitly to avoid host overrides
+COPY src ./src
 
 # Expose server port
 EXPOSE 5000
