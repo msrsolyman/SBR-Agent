@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: sbr_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - sbr_network
+
+  backend:
+    build: ./backend
+    container_name: sbr_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/sbr_agent_ai
+    depends_on:
+      - mongodb
+    networks:
+      - sbr_network
+
+  frontend:
+    build: ./frontend
+    container_name: sbr_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - sbr_network
+
+volumes:
+  mongo_data:
+
+networks:
+  sbr_network:
+    driver: bridge
